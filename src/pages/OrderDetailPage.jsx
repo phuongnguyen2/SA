@@ -16,7 +16,8 @@ import {
     FileSearch,
     Save,
     Trash2,
-    Plus
+    Plus,
+    Coins
 } from 'lucide-react'
 import './OrderDetailPage.css'
 
@@ -30,26 +31,18 @@ const statusOptions = [
 ]
 
 const mockPacks = [
-    { id: 1, name: 'Free', price: 0, packageType: 'Gói phụ', customerCategory: 'Cá nhân' },
-    { id: 2, name: 'Free Bonus', price: 0, packageType: 'Gói phụ', customerCategory: 'Doanh nghiệp' },
-    { id: 3, name: 'Starter', price: 99000, packageType: 'Gói chính', customerCategory: 'Cá nhân' },
-    { id: 4, name: 'Professional', price: 299000, packageType: 'Gói chính', customerCategory: 'Doanh nghiệp' },
-    { id: 5, name: 'Enterprise', price: 999000, packageType: 'Gói chính', customerCategory: 'Doanh nghiệp' },
-    { id: 6, name: 'Gói Professional (1 năm)', price: 299000, packageType: 'Gói chính', customerCategory: 'Doanh nghiệp' },
-    { id: 7, name: 'Dịch vụ Setup AI Bot', price: 100000, packageType: 'Gói phụ', customerCategory: 'Doanh nghiệp' },
-    { id: 8, name: 'Gói Starter (6 tháng)', price: 99000, packageType: 'Gói chính', customerCategory: 'Cá nhân' },
-    { id: 9, name: 'Dung lượng lưu trữ +10GB', price: 50000, packageType: 'Gói phụ', customerCategory: 'Cá nhân' },
+    { id: 1, name: 'Free', price: 0, credits: 300 },
+    { id: 2, name: 'Free Bonus', price: 0, credits: 500 },
+    { id: 3, name: 'Starter', price: 99000, credits: 1300 },
+    { id: 4, name: 'Professional', price: 299000, credits: 3000 },
+    { id: 5, name: 'Enterprise', price: 999000, credits: 10000 },
+    { id: 6, name: 'Gói Professional (1 năm)', price: 299000, credits: 3000 },
+    { id: 7, name: 'Dịch vụ Setup AI Bot', price: 100000, credits: 500 },
+    { id: 8, name: 'Gói Starter (6 tháng)', price: 99000, credits: 1300 },
+    { id: 9, name: 'Dung lượng lưu trữ +10GB', price: 50000, credits: 200 },
 ]
 
-const packageTypeOptions = [
-    { value: 'Gói chính', label: 'Gói chính' },
-    { value: 'Gói phụ', label: 'Gói phụ' },
-]
 
-const customerCategoryOptions = [
-    { value: 'Doanh nghiệp', label: 'Doanh nghiệp' },
-    { value: 'Cá nhân', label: 'Cá nhân' },
-]
 
 const initialOrder = {
     id: 'ORD-001',
@@ -61,10 +54,10 @@ const initialOrder = {
     status: 'xacnhan',
     discount: 50000,
     items: [
-        { id: 1, serviceName: 'Gói Professional (1 năm)', packageType: 'Gói chính', customerCategory: 'Doanh nghiệp', quantity: 1, price: 299000, currency: 'VND', discountAmount: 0, discountPercent: 0, tax: 10 },
-        { id: 2, serviceName: 'Dịch vụ Setup AI Bot', packageType: 'Gói phụ', customerCategory: 'Doanh nghiệp', quantity: 1, price: 100000, currency: 'VND', discountAmount: 10000, discountPercent: 10, tax: 8 },
-        { id: 3, serviceName: 'Gói Starter (6 tháng)', packageType: 'Gói chính', customerCategory: 'Cá nhân', quantity: 1, price: 99000, currency: 'VND', discountAmount: 0, discountPercent: 0, tax: 10 },
-        { id: 4, serviceName: 'Dung lượng lưu trữ +10GB', packageType: 'Gói phụ', customerCategory: 'Cá nhân', quantity: 2, price: 50000, currency: 'VND', discountAmount: 5000, discountPercent: 5, tax: 8 },
+        { id: 1, serviceName: 'Gói Professional (1 năm)', quantity: 1, price: 299000, credits: 3000, currency: 'VND', discountAmount: 0, discountPercent: 0, tax: 10 },
+        { id: 2, serviceName: 'Dịch vụ Setup AI Bot', quantity: 1, price: 100000, credits: 500, currency: 'VND', discountAmount: 10000, discountPercent: 10, tax: 8 },
+        { id: 3, serviceName: 'Gói Starter (6 tháng)', quantity: 1, price: 99000, credits: 1300, currency: 'VND', discountAmount: 0, discountPercent: 0, tax: 10 },
+        { id: 4, serviceName: 'Dung lượng lưu trữ +10GB', quantity: 2, price: 50000, credits: 200, currency: 'VND', discountAmount: 5000, discountPercent: 5, tax: 8 },
     ]
 }
 
@@ -108,10 +101,9 @@ export default function OrderDetailPage() {
                 {
                     id: Date.now(),
                     serviceName: '',
-                    packageType: 'Gói chính',
-                    customerCategory: 'Doanh nghiệp',
                     quantity: 1,
                     price: 0,
+                    credits: 0,
                     currency: 'VND',
                     discountAmount: 0,
                     discountPercent: 0,
@@ -143,8 +135,7 @@ export default function OrderDetailPage() {
                         const pack = mockPacks.find(p => p.name === value)
                         if (pack) {
                             newItem.price = pack.price
-                            newItem.packageType = pack.packageType
-                            newItem.customerCategory = pack.customerCategory
+                            newItem.credits = pack.credits
                         }
                     }
 
@@ -164,6 +155,7 @@ export default function OrderDetailPage() {
     }
 
     const currentStatus = statusOptions.find(s => s.id === order.status) || statusOptions[0]
+    const isDetailEditable = order.status === 'huy'
 
     return (
         <>
@@ -255,22 +247,22 @@ export default function OrderDetailPage() {
                             <table className="items-table editable-table">
                                 <thead>
                                     <tr>
-                                        <th style={{ width: '25%' }}>Tên dịch vụ</th>
-                                        <th style={{ width: '12%' }}>Phân loại</th>
-                                        <th style={{ width: '12%' }}>Đối tượng</th>
-                                        <th style={{ width: '8%' }}>SL</th>
-                                        <th style={{ width: '12%' }}>Đơn giá</th>
+                                        <th style={{ width: '20%' }}>Tên dịch vụ</th>
+
+                                        <th style={{ width: '6%' }}>SL</th>
+                                        <th style={{ width: '8%' }}>Credit</th>
+                                        <th style={{ width: '10%' }}>Đơn giá</th>
                                         <th style={{ width: '10%' }}>Giảm (%)</th>
                                         <th style={{ width: '8%' }}>Thuế (%)</th>
-                                        <th style={{ width: '13%', textAlign: 'right' }}>Thành tiền</th>
-                                        <th style={{ width: '40px' }}></th>
+                                        <th style={{ width: '10%', textAlign: 'right' }}>Thành tiền</th>
+                                        {isDetailEditable && <th style={{ width: '40px' }}></th>}
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {order.items.map(item => (
                                         <tr key={item.id}>
                                             <td>
-                                                {item.isNew ? (
+                                                {item.isNew && isDetailEditable ? (
                                                     <select
                                                         className="table-select"
                                                         value={item.serviceName}
@@ -283,29 +275,21 @@ export default function OrderDetailPage() {
                                                     <div className="item-name-static">{item.serviceName}</div>
                                                 )}
                                             </td>
-                                            <td>
-                                                <input
-                                                    type="text"
-                                                    className="table-input readonly-input"
-                                                    value={item.packageType}
-                                                    readOnly
-                                                />
-                                            </td>
-                                            <td>
-                                                <input
-                                                    type="text"
-                                                    className="table-input readonly-input"
-                                                    value={item.customerCategory}
-                                                    readOnly
-                                                />
-                                            </td>
+
                                             <td>
                                                 <input
                                                     type="number"
                                                     className="table-input text-center"
                                                     value={item.quantity}
                                                     onChange={(e) => updateItem(item.id, 'quantity', parseInt(e.target.value) || 0)}
+                                                    readOnly={!isDetailEditable}
                                                 />
+                                            </td>
+                                            <td>
+                                                <div className="cell-credit">
+                                                    <Coins size={14} />
+                                                    <span style={{ fontWeight: 600 }}>{(item.credits || 0).toLocaleString()}</span>
+                                                </div>
                                             </td>
                                             <td>
                                                 <input
@@ -313,6 +297,7 @@ export default function OrderDetailPage() {
                                                     className="table-input"
                                                     value={item.price}
                                                     onChange={(e) => updateItem(item.id, 'price', parseInt(e.target.value) || 0)}
+                                                    readOnly={!isDetailEditable}
                                                 />
                                             </td>
                                             <td>
@@ -321,6 +306,7 @@ export default function OrderDetailPage() {
                                                     className="table-input"
                                                     value={item.discountPercent}
                                                     onChange={(e) => updateItem(item.id, 'discountPercent', parseInt(e.target.value) || 0)}
+                                                    readOnly={!isDetailEditable}
                                                 />
                                             </td>
                                             <td>
@@ -329,31 +315,36 @@ export default function OrderDetailPage() {
                                                     className="table-input"
                                                     value={item.tax}
                                                     onChange={(e) => updateItem(item.id, 'tax', parseInt(e.target.value) || 0)}
+                                                    readOnly={!isDetailEditable}
                                                 />
                                             </td>
                                             <td style={{ textAlign: 'right', fontWeight: 700 }}>
                                                 {formatCurrency(calculateItemTotal(item))}
                                             </td>
-                                            <td>
-                                                <button
-                                                    className="remove-item-btn"
-                                                    onClick={() => handleRemoveItem(item.id)}
-                                                    disabled={order.items.length === 1}
-                                                >
-                                                    <Trash2 size={16} />
-                                                </button>
-                                            </td>
+                                            {isDetailEditable && (
+                                                <td>
+                                                    <button
+                                                        className="remove-item-btn"
+                                                        onClick={() => handleRemoveItem(item.id)}
+                                                        disabled={order.items.length === 1}
+                                                    >
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                </td>
+                                            )}
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
                         </div>
 
-                        <div className="table-footer-actions">
-                            <button className="add-item-btn" onClick={handleAddItem}>
-                                <Plus size={16} /> Thêm dịch vụ
-                            </button>
-                        </div>
+                        {isDetailEditable && (
+                            <div className="table-footer-actions">
+                                <button className="add-item-btn" onClick={handleAddItem}>
+                                    <Plus size={16} /> Thêm dịch vụ
+                                </button>
+                            </div>
+                        )}
 
                         <div className="summary-section">
                             <div className="summary-card">
@@ -368,6 +359,7 @@ export default function OrderDetailPage() {
                                         className="summary-input"
                                         value={order.discount}
                                         onChange={(e) => setOrder({ ...order, discount: parseInt(e.target.value) || 0 })}
+                                        readOnly={!isDetailEditable}
                                     />
                                 </div>
                                 <div className="summary-row total">

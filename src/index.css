@@ -418,6 +418,86 @@ img {
   white-space: nowrap;
 }
 
+/* Account Type badges (Free / Pro) */
+.status-badge.account-pro {
+  background: linear-gradient(135deg, #F5A623, #F7C948);
+  color: #7C4A00;
+  gap: 4px;
+  font-weight: 700;
+}
+
+.status-badge.account-free {
+  background: var(--color-bg);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+  gap: 4px;
+}
+
+/* Account Status badges (Pro / Free Trial / Expire Trial / Trial) */
+.status-badge.account-status-pro {
+  background: linear-gradient(135deg, #F5A623, #F7C948);
+  color: #7C4A00;
+  gap: 4px;
+  font-weight: 700;
+}
+
+.status-badge.account-status-free-trial {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+  gap: 4px;
+  font-weight: 600;
+}
+
+.status-badge.account-status-expire-trial {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+  gap: 4px;
+  font-weight: 600;
+}
+
+.status-badge.account-status-trial {
+  background: var(--color-info-bg);
+  color: #0984E3;
+  gap: 4px;
+  font-weight: 600;
+}
+
+/* Exhausted badge for service packs */
+.status-badge.exhausted {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+}
+
+/* Credit cell display */
+.cell-credit {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--color-text-secondary);
+  font-size: 0.857rem;
+}
+
+.cell-credit svg {
+  width: 14px;
+  height: 14px;
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+/* Plan credit badge */
+.plan-credit-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 14px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: var(--color-info-bg);
+  color: #0984E3;
+  white-space: nowrap;
+}
+
 /* Date cell */
 .cell-date {
   display: flex;

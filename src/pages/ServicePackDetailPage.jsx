@@ -3,8 +3,8 @@ import { useParams, Link } from 'react-router-dom'
 import Header from '../components/Header'
 import {
     ArrowLeft, Package, Save, CheckCircle, AlertCircle,
-    DollarSign, RotateCcw, Calendar, Lock, Trash2,
-    Users, Timer, Clock, Video, HardDrive, Zap, ShieldCheck, Pencil, Crown
+    DollarSign, Calendar,
+    Zap, ShieldCheck, Pencil, Coins
 } from 'lucide-react'
 import './ServicePackDetailPage.css'
 
@@ -14,135 +14,67 @@ import './ServicePackDetailPage.css'
 const mockPacks = {
     1: {
         name: 'Free',
-        type: 'main',        // main | addon
         price: 0,
         currency: 'VND',
-        resetCycle: 1,             // tháng
-        validityPeriod: 12,        // tháng
-        lockAfterDays: 30,         // ngày
-        deleteDbAfterDays: 90,     // ngày
-        maxMembers: 5,
-        meetingMinutesPerCycle: 300,
-        meetingMinutesOutCycle: 30,
-        meetingsPerDay: 3,
-        minutesPerMeeting: 45,
-        storageLimit: 2,           // GB
-        aiPriority: 'normal',      // highest | high | normal
-        priority: 3,               // 1: cao nhất, lower is higher priority
+        validityPeriod: 12,
+        credits: 300,
+        aiPriority: 'normal',
         businessActive: true,
     },
     2: {
         name: 'Free Bonus',
-        type: 'addon',
         price: 0,
         currency: 'VND',
-        resetCycle: 1,
         validityPeriod: 3,
-        lockAfterDays: 15,
-        deleteDbAfterDays: 60,
-        maxMembers: 10,
-        meetingMinutesPerCycle: 500,
-        meetingMinutesOutCycle: 50,
-        meetingsPerDay: 5,
-        minutesPerMeeting: 60,
-        storageLimit: 5,
+        credits: 500,
         aiPriority: 'normal',
-        priority: 3,
         businessActive: true,
     },
     3: {
         name: 'Starter',
-        type: 'main',
         price: 99000,
         currency: 'VND',
-        resetCycle: 1,
         validityPeriod: 12,
-        lockAfterDays: 30,
-        deleteDbAfterDays: 90,
-        maxMembers: 20,
-        meetingMinutesPerCycle: 1300,
-        meetingMinutesOutCycle: 130,
-        meetingsPerDay: 15,
-        minutesPerMeeting: 120,
-        storageLimit: 20,
+        credits: 1300,
         aiPriority: 'high',
         businessActive: true,
     },
     4: {
         name: 'Professional',
-        type: 'main',
         price: 299000,
         currency: 'VND',
-        resetCycle: 1,
         validityPeriod: 12,
-        lockAfterDays: 60,
-        deleteDbAfterDays: 180,
-        maxMembers: 50,
-        meetingMinutesPerCycle: 3000,
-        meetingMinutesOutCycle: 300,
-        meetingsPerDay: 30,
-        minutesPerMeeting: 180,
-        storageLimit: 50,
+        credits: 3000,
         aiPriority: 'high',
         businessActive: true,
     },
     5: {
         name: 'Enterprise',
-        type: 'main',
         price: 999000,
         currency: 'VND',
-        resetCycle: 1,
         validityPeriod: 12,
-        lockAfterDays: 90,
-        deleteDbAfterDays: 365,
-        maxMembers: 200,
-        meetingMinutesPerCycle: 10000,
-        meetingMinutesOutCycle: 1000,
-        meetingsPerDay: 100,
-        minutesPerMeeting: 300,
-        storageLimit: 200,
+        credits: 10000,
         aiPriority: 'highest',
-        priority: 1,
         businessActive: true,
     },
     6: {
         name: 'Trial 30 Days',
-        type: 'addon',
         price: 0,
         currency: 'VND',
-        resetCycle: 1,
         validityPeriod: 1,
-        lockAfterDays: 7,
-        deleteDbAfterDays: 30,
-        maxMembers: 50,
-        meetingMinutesPerCycle: 1000,
-        meetingMinutesOutCycle: 100,
-        meetingsPerDay: 20,
-        minutesPerMeeting: 120,
-        storageLimit: 10,
+        credits: 1000,
         aiPriority: 'normal',
-        priority: 3,
         businessActive: false,
     },
 }
 
 const defaultPack = {
     name: '',
-    type: 'main',
     price: 0,
     currency: 'VND',
-    resetCycle: 1,
     validityPeriod: 12,
-    lockAfterDays: 30,
-    deleteDbAfterDays: 90,
-    maxMembers: 5,
-    meetingMinutesPerCycle: 300,
-    meetingMinutesOutCycle: 30,
-    meetingsPerDay: 3,
-    minutesPerMeeting: 45,
-    storageLimit: 2,
+    credits: 300,
     aiPriority: 'normal',
-    priority: 3,
     businessActive: true,
 }
 
@@ -156,11 +88,6 @@ const currencyOptions = [
     { value: 'VND', label: 'VND' },
     { value: 'USD', label: 'USD' },
     { value: 'EUR', label: 'EUR' },
-]
-
-const typeOptions = [
-    { value: 'main', label: 'Gói chính' },
-    { value: 'addon', label: 'Gói phụ' },
 ]
 
 /* ============================================================
@@ -238,13 +165,12 @@ export default function ServicePackDetailPage() {
                             <Pencil size={14} className="edit-hint" />
                         </div>
                         <div className="pack-header-meta">
-                            <span className={`pack-type-badge ${pack.type === 'main' ? 'main' : 'addon'}`}>
-                                <Package size={14} />
-                                {pack.type === 'main' ? 'Gói chính' : 'Gói phụ'}
-                            </span>
-                            <span style={{ color: 'var(--color-text-muted)' }}>•</span>
                             <span style={{ fontWeight: 600, color: 'var(--color-text-secondary)', fontSize: '0.928rem' }}>
                                 {formatPrice(pack.price)} {pack.currency}
+                            </span>
+                            <span style={{ color: 'var(--color-text-muted)' }}>•</span>
+                            <span className="plan-credit-badge">
+                                <Coins size={14} /> {pack.credits.toLocaleString()} credits
                             </span>
                         </div>
                     </div>
@@ -270,17 +196,6 @@ export default function ServicePackDetailPage() {
                                 />
                             </div>
                             <div className="sp-field">
-                                <label><Package size={14} /> Phân loại gói</label>
-                                <select
-                                    className="sp-select"
-                                    value={pack.type}
-                                    onChange={e => updateField('type', e.target.value)}
-                                    id="select-pack-type"
-                                >
-                                    {typeOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-                                </select>
-                            </div>
-                            <div className="sp-field">
                                 <label><DollarSign size={14} /> Giá gói</label>
                                 <input
                                     type="number"
@@ -301,182 +216,33 @@ export default function ServicePackDetailPage() {
                                     {currencyOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
                                 </select>
                             </div>
-                            <div className="sp-field">
-                                <label><RotateCcw size={14} /> Chu kỳ reset</label>
-                                <div className="sp-input-unit">
-                                    <input
-                                        type="number"
-                                        className="sp-input"
-                                        value={pack.resetCycle}
-                                        onChange={e => updateField('resetCycle', Number(e.target.value))}
-                                        id="input-reset-cycle"
-                                    />
-                                    <span className="sp-input-suffix">tháng</span>
-                                </div>
-                            </div>
-                            <div className="sp-field">
-                                <label><Calendar size={14} /> Hạn sử dụng</label>
-                                <div className="sp-input-unit">
-                                    <input
-                                        type="number"
-                                        className="sp-input"
-                                        value={pack.validityPeriod}
-                                        onChange={e => updateField('validityPeriod', Number(e.target.value))}
-                                        id="input-validity"
-                                    />
-                                    <span className="sp-input-suffix">tháng</span>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </section>
 
-                {/* ===== Section 2: Chính sách hết hạn ===== */}
+                {/* ===== Section 2: Credit ===== */}
                 <section className="detail-section">
-                    <h2 className="detail-section-title"><Lock size={20} /> Chính sách hết hạn</h2>
-                    <div className="sp-section-card">
-                        <div className="sp-form-grid">
-                            <div className="sp-field">
-                                <label><Lock size={14} /> Khóa sau số ngày hết hạn</label>
-                                <div className="sp-input-unit">
+                    <h2 className="detail-section-title"><Coins size={20} /> Credit</h2>
+                    <div className="sp-limits-grid" style={{ gridTemplateColumns: '1fr' }}>
+                        <div className="sp-limit-card">
+                            <div className="sp-limit-icon blue"><Coins size={20} /></div>
+                            <div className="sp-limit-body">
+                                <span className="sp-limit-label">Số lượng Credit</span>
+                                <div className="sp-limit-input-row">
                                     <input
                                         type="number"
-                                        className="sp-input"
-                                        value={pack.lockAfterDays}
-                                        onChange={e => updateField('lockAfterDays', Number(e.target.value))}
-                                        id="input-lock-days"
+                                        value={pack.credits}
+                                        onChange={e => updateField('credits', Number(e.target.value))}
+                                        id="input-credits"
                                     />
-                                    <span className="sp-input-suffix">ngày</span>
-                                </div>
-                            </div>
-                            <div className="sp-field">
-                                <label><Trash2 size={14} /> Xóa DB sau số ngày hết hạn</label>
-                                <div className="sp-input-unit">
-                                    <input
-                                        type="number"
-                                        className="sp-input"
-                                        value={pack.deleteDbAfterDays}
-                                        onChange={e => updateField('deleteDbAfterDays', Number(e.target.value))}
-                                        id="input-delete-db-days"
-                                    />
-                                    <span className="sp-input-suffix">ngày</span>
+                                    <span className="sp-limit-unit">credits</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                {/* ===== Section 3: Giới hạn sử dụng ===== */}
-                <section className="detail-section">
-                    <h2 className="detail-section-title"><Timer size={20} /> Giới hạn sử dụng</h2>
-                    <div className="sp-limits-grid">
-
-                        {/* Giới hạn nhân sự */}
-                        <div className="sp-limit-card">
-                            <div className="sp-limit-icon purple"><Users size={20} /></div>
-                            <div className="sp-limit-body">
-                                <span className="sp-limit-label">Giới hạn nhân sự</span>
-                                <div className="sp-limit-input-row">
-                                    <input
-                                        type="number"
-                                        value={pack.maxMembers}
-                                        onChange={e => updateField('maxMembers', Number(e.target.value))}
-                                        id="input-max-members"
-                                    />
-                                    <span className="sp-limit-unit">người</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Phút họp / chu kỳ */}
-                        <div className="sp-limit-card">
-                            <div className="sp-limit-icon blue"><Timer size={20} /></div>
-                            <div className="sp-limit-body">
-                                <span className="sp-limit-label">Phút họp / chu kỳ</span>
-                                <div className="sp-limit-input-row">
-                                    <input
-                                        type="number"
-                                        value={pack.meetingMinutesPerCycle}
-                                        onChange={e => updateField('meetingMinutesPerCycle', Number(e.target.value))}
-                                        id="input-minutes-in-cycle"
-                                    />
-                                    <span className="sp-limit-unit">phút</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Phút họp ngoài chu kỳ */}
-                        <div className="sp-limit-card">
-                            <div className="sp-limit-icon orange"><Timer size={20} /></div>
-                            <div className="sp-limit-body">
-                                <span className="sp-limit-label">Phút họp ngoài chu kỳ</span>
-                                <div className="sp-limit-input-row">
-                                    <input
-                                        type="number"
-                                        value={pack.meetingMinutesOutCycle}
-                                        onChange={e => updateField('meetingMinutesOutCycle', Number(e.target.value))}
-                                        id="input-minutes-out-cycle"
-                                    />
-                                    <span className="sp-limit-unit">phút</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Cuộc họp / ngày */}
-                        <div className="sp-limit-card">
-                            <div className="sp-limit-icon green"><Video size={20} /></div>
-                            <div className="sp-limit-body">
-                                <span className="sp-limit-label">Số cuộc họp / ngày</span>
-                                <div className="sp-limit-input-row">
-                                    <input
-                                        type="number"
-                                        value={pack.meetingsPerDay}
-                                        onChange={e => updateField('meetingsPerDay', Number(e.target.value))}
-                                        id="input-meetings-per-day"
-                                    />
-                                    <span className="sp-limit-unit">cuộc</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Phút / cuộc họp */}
-                        <div className="sp-limit-card">
-                            <div className="sp-limit-icon red"><Clock size={20} /></div>
-                            <div className="sp-limit-body">
-                                <span className="sp-limit-label">Phút họp / cuộc họp</span>
-                                <div className="sp-limit-input-row">
-                                    <input
-                                        type="number"
-                                        value={pack.minutesPerMeeting}
-                                        onChange={e => updateField('minutesPerMeeting', Number(e.target.value))}
-                                        id="input-minutes-per-meeting"
-                                    />
-                                    <span className="sp-limit-unit">phút</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Dung lượng lưu trữ */}
-                        <div className="sp-limit-card">
-                            <div className="sp-limit-icon purple"><HardDrive size={20} /></div>
-                            <div className="sp-limit-body">
-                                <span className="sp-limit-label">Dung lượng lưu trữ</span>
-                                <div className="sp-limit-input-row">
-                                    <input
-                                        type="number"
-                                        value={pack.storageLimit}
-                                        onChange={e => updateField('storageLimit', Number(e.target.value))}
-                                        id="input-storage-limit"
-                                    />
-                                    <span className="sp-limit-unit">GB</span>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </section>
-
-                {/* ===== Section 4: AI Priority & Business Status ===== */}
+                {/* ===== Section 3: AI Priority & Business Status ===== */}
                 <section className="detail-section">
                     <h2 className="detail-section-title"><Zap size={20} /> Ưu tiên & Trạng thái</h2>
                     <div className="ai-priority-section">
@@ -492,23 +258,6 @@ export default function ServicePackDetailPage() {
                                 >
                                     {aiPriorityOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
                                 </select>
-                            </div>
-                        </div>
-                        <div className="ai-card">
-                            <div className="ai-card-icon"><Crown size={24} /></div>
-                            <div className="ai-card-body">
-                                <label>Ưu tiên trừ Quota</label>
-                                <div className="sp-input-unit">
-                                    <input
-                                        type="number"
-                                        className="sp-input"
-                                        value={pack.priority}
-                                        onChange={e => updateField('priority', Number(e.target.value))}
-                                        id="input-quota-priority"
-                                        min="1"
-                                    />
-                                    <span className="sp-input-suffix">(Số càng nhỏ ưu tiên càng cao)</span>
-                                </div>
                             </div>
                         </div>
                         <div className="business-status-card">

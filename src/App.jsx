@@ -5,6 +5,7 @@ import CustomersPage from './pages/CustomersPage'
 import CustomerDetailPage from './pages/CustomerDetailPage'
 import ServicePacksPage from './pages/ServicePacksPage'
 import ServicePackDetailPage from './pages/ServicePackDetailPage'
+import ServicePackCreatePage from './pages/ServicePackCreatePage'
 import OrdersPage from './pages/OrdersPage'
 import OrderDetailPage from './pages/OrderDetailPage'
 import OrderCreatePage from './pages/OrderCreatePage'
@@ -20,6 +21,7 @@ export default function App() {
           <Route path="/customers" element={<CustomersPage />} />
           <Route path="/customers/:id" element={<CustomerDetailPage />} />
           <Route path="/service-packs" element={<ServicePacksPage />} />
+          <Route path="/service-packs/new" element={<ServicePackCreatePage />} />
           <Route path="/service-packs/:id" element={<ServicePackDetailPage />} />
           <Route path="/orders" element={<OrdersPage />} />
           <Route path="/orders/new" element={<OrderCreatePage />} />

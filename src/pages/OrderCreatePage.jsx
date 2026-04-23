@@ -14,7 +14,8 @@ import {
     Trash2,
     Building2,
     Mail,
-    Hash
+    Hash,
+    Coins
 } from 'lucide-react'
 import './OrderCreatePage.css'
 
@@ -25,11 +26,11 @@ const mockCustomers = [
 ]
 
 const mockPacks = [
-    { id: 1, name: 'Free', price: 0 },
-    { id: 2, name: 'Free Bonus', price: 0 },
-    { id: 3, name: 'Starter', price: 99000 },
-    { id: 4, name: 'Professional', price: 299000 },
-    { id: 5, name: 'Enterprise', price: 999000 },
+    { id: 1, name: 'Free', price: 0, credits: 300 },
+    { id: 2, name: 'Free Bonus', price: 0, credits: 500 },
+    { id: 3, name: 'Starter', price: 99000, credits: 1300 },
+    { id: 4, name: 'Professional', price: 299000, credits: 3000 },
+    { id: 5, name: 'Enterprise', price: 999000, credits: 10000 },
 ]
 
 const statusOptions = [
@@ -38,15 +39,7 @@ const statusOptions = [
     { id: 'xacnhan', label: 'Xác nhận thanh toán', icon: <CreditCard size={16} /> },
 ]
 
-const packageTypeOptions = [
-    { value: 'Gói chính', label: 'Gói chính' },
-    { value: 'Gói phụ', label: 'Gói phụ' },
-]
 
-const customerCategoryOptions = [
-    { value: 'Doanh nghiệp', label: 'Doanh nghiệp' },
-    { value: 'Cá nhân', label: 'Cá nhân' },
-]
 
 export default function OrderCreatePage() {
     const navigate = useNavigate()
@@ -64,10 +57,9 @@ export default function OrderCreatePage() {
             {
                 id: Date.now(),
                 serviceName: '',
-                packageType: 'Gói chính',
-                customerCategory: 'Doanh nghiệp',
                 quantity: 1,
                 price: 0,
+                credits: 0,
                 currency: 'VND',
                 discountAmount: 0,
                 discountPercent: 0,
@@ -127,10 +119,9 @@ export default function OrderCreatePage() {
                 {
                     id: Date.now(),
                     serviceName: '',
-                    packageType: 'Gói chính',
-                    customerCategory: 'Doanh nghiệp',
                     quantity: 1,
                     price: 0,
+                    credits: 0,
                     currency: 'VND',
                     discountAmount: 0,
                     discountPercent: 0,
@@ -161,6 +152,7 @@ export default function OrderCreatePage() {
                         const pack = mockPacks.find(p => p.name === value)
                         if (pack) {
                             newItem.price = pack.price
+                            newItem.credits = pack.credits
                         }
                     }
 
@@ -195,109 +187,211 @@ export default function OrderCreatePage() {
                     </Link>
 
                     <div className="order-create-header">
-                        <div className="order-header-left">
-                            <div className="order-icon-wrapper">
-                                <Plus size={32} />
+                        <div className="order-header-left" style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                            <div style={{ background: 'var(--color-primary-bg)', color: 'var(--color-primary)', padding: '10px', borderRadius: '12px', display: 'flex' }}>
+                                <Plus size={24} />
                             </div>
                             <div className="order-header-info">
                                 <h1>Tạo mới đơn hàng</h1>
-                                <p className="text-muted">Nhập thông tin chi tiết để tạo đơn hàng mới</p>
+                                <p className="text-muted" style={{ margin: 0 }}>Nhập thông tin chi tiết để tạo đơn hàng mới</p>
                             </div>
-                        </div>
-                        <div className="action-btn-group">
-                            <button className="save-btn" onClick={handleSave}>
-                                <Save size={18} />
-                                Lưu đơn hàng
-                            </button>
                         </div>
                     </div>
 
-                    <div className="section-grid">
-                        {/* Customer & Billing */}
-                        <div className="order-card">
-                            <h3 className="card-title"><User size={20} /> Khách hàng & Hoá đơn</h3>
-                            <div className="form-grid">
-                                <div className="form-item span-2">
-                                    <label className="info-label">Chọn khách hàng</label>
-                                    <select
-                                        className="edit-select create-status-select"
-                                        value={order.customerId}
-                                        onChange={handleCustomerChange}
-                                    >
-                                        <option value="">-- Chọn khách hàng sẵn có --</option>
-                                        {mockCustomers.map(c => (
-                                            <option key={c.id} value={c.id}>{c.org}</option>
-                                        ))}
-                                        <option value="custom">Nhập mới khách hàng...</option>
-                                    </select>
-                                </div>
-                                <div className="form-item span-2">
-                                    <label className="info-label">Tên khách hàng / Công ty</label>
-                                    <div className="input-with-icon">
-                                        <Building2 size={16} />
+                    <div className="order-main-layout">
+                        {/* LEFT COLUMN: Main Details & Items */}
+                        <div className="order-left-col">
+                            <div className="order-card">
+                                <h3 className="card-title"><User size={20} /> Thông tin Khách hàng & Đơn hàng</h3>
+                                <div className="compact-form-grid">
+                                    <div className="form-item span-2">
+                                        <label className="info-label">Chọn khách hàng</label>
+                                        <select
+                                            className="edit-select create-status-select"
+                                            value={order.customerId}
+                                            onChange={handleCustomerChange}
+                                        >
+                                            <option value="">-- Chọn khách hàng sẵn có --</option>
+                                            {mockCustomers.map(c => (
+                                                <option key={c.id} value={c.id}>{c.org}</option>
+                                            ))}
+                                            <option value="custom">Nhập mới khách hàng...</option>
+                                        </select>
+                                    </div>
+                                    <div className="form-item">
+                                        <label className="info-label">Ngày đặt hàng</label>
                                         <input
-                                            type="text"
-                                            className="edit-input icon-padding"
-                                            placeholder="Nhập tên khách hàng hoặc công ty..."
-                                            value={order.customerName}
-                                            onChange={(e) => setOrder({ ...order, customerName: e.target.value, customerId: 'custom' })}
+                                            type="date"
+                                            className="edit-input"
+                                            value={order.orderDate}
+                                            onChange={(e) => setOrder({ ...order, orderDate: e.target.value })}
                                         />
                                     </div>
-                                </div>
-                                <div className="form-item span-2">
-                                    <label className="info-label">Địa chỉ xuất hoá đơn</label>
-                                    <textarea
-                                        className="edit-input"
-                                        rows="2"
-                                        placeholder="Địa chỉ chi tiết..."
-                                        value={order.billingAddress}
-                                        onChange={(e) => setOrder({ ...order, billingAddress: e.target.value })}
-                                    ></textarea>
-                                </div>
-                                <div className="form-item">
-                                    <label className="info-label">Mã số thuế</label>
-                                    <div className="input-with-icon">
-                                        <Hash size={16} />
+
+                                    <div className="form-item span-2">
+                                        <label className="info-label">Tên khách hàng / Công ty</label>
+                                        <div className="input-with-icon">
+                                            <Building2 size={16} />
+                                            <input
+                                                type="text"
+                                                className="edit-input icon-padding"
+                                                placeholder="Tên công ty..."
+                                                value={order.customerName}
+                                                onChange={(e) => setOrder({ ...order, customerName: e.target.value, customerId: 'custom' })}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="form-item">
+                                        <label className="info-label">Mã số thuế</label>
+                                        <div className="input-with-icon">
+                                            <Hash size={16} />
+                                            <input
+                                                type="text"
+                                                className="edit-input icon-padding"
+                                                placeholder="MST..."
+                                                value={order.taxId}
+                                                onChange={(e) => setOrder({ ...order, taxId: e.target.value })}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="form-item span-2">
+                                        <label className="info-label">Địa chỉ xuất hoá đơn</label>
                                         <input
                                             type="text"
-                                            className="edit-input icon-padding"
-                                            placeholder="MST..."
-                                            value={order.taxId}
-                                            onChange={(e) => setOrder({ ...order, taxId: e.target.value })}
+                                            className="edit-input"
+                                            placeholder="Địa chỉ chi tiết..."
+                                            value={order.billingAddress}
+                                            onChange={(e) => setOrder({ ...order, billingAddress: e.target.value })}
                                         />
                                     </div>
-                                </div>
-                                <div className="form-item">
-                                    <label className="info-label">Email nhận hoá đơn</label>
-                                    <div className="input-with-icon">
-                                        <Mail size={16} />
-                                        <input
-                                            type="email"
-                                            className="edit-input icon-padding"
-                                            placeholder="Email..."
-                                            value={order.billingEmail}
-                                            onChange={(e) => setOrder({ ...order, billingEmail: e.target.value })}
-                                        />
+                                    <div className="form-item">
+                                        <label className="info-label">Email nhận hoá đơn</label>
+                                        <div className="input-with-icon">
+                                            <Mail size={16} />
+                                            <input
+                                                type="email"
+                                                className="edit-input icon-padding"
+                                                placeholder="Email..."
+                                                value={order.billingEmail}
+                                                onChange={(e) => setOrder({ ...order, billingEmail: e.target.value })}
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+
+                            <div className="order-card">
+                                <h3 className="card-title"><Tag size={20} /> Chi tiết dịch vụ</h3>
+                                <div style={{ overflowX: 'auto' }}>
+                                    <table className="items-create-table">
+                                        <thead>
+                                            <tr>
+                                                <th style={{ width: '22%' }}>Gói dịch vụ</th>
+                                                <th style={{ width: '8%', textAlign: 'center' }}>SL</th>
+                                                <th style={{ width: '12%' }}>Đơn giá</th>
+                                                <th style={{ width: '10%' }}>Giảm (%)</th>
+                                                <th style={{ width: '10%' }}>Thuế (%)</th>
+                                                <th style={{ width: '15%', textAlign: 'right' }}>Thành tiền</th>
+                                                <th style={{ width: '5%' }}></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {order.items.map((item, index) => (
+                                                <tr key={item.id}>
+                                                    <td>
+                                                        <select
+                                                            className="table-select"
+                                                            value={item.serviceName}
+                                                            onChange={(e) => updateItem(item.id, 'serviceName', e.target.value)}
+                                                        >
+                                                            <option value="">- Chọn -</option>
+                                                            {mockPacks.map(p => <option key={p.id} value={p.name}>{p.name}</option>)}
+                                                        </select>
+                                                    </td>
+                                                    <td>
+                                                        <input
+                                                            type="number"
+                                                            className="table-input text-center"
+                                                            value={item.quantity}
+                                                            onChange={(e) => updateItem(item.id, 'quantity', parseInt(e.target.value) || 0)}
+                                                        />
+                                                    </td>
+                                                    <td>
+                                                        <input
+                                                            type="number"
+                                                            className="table-input text-center"
+                                                            value={item.price}
+                                                            onChange={(e) => updateItem(item.id, 'price', parseInt(e.target.value) || 0)}
+                                                        />
+                                                    </td>
+                                                    <td>
+                                                        <input
+                                                            type="number"
+                                                            className="table-input text-center"
+                                                            value={item.discountPercent}
+                                                            onChange={(e) => updateItem(item.id, 'discountPercent', parseInt(e.target.value) || 0)}
+                                                        />
+                                                    </td>
+                                                    <td>
+                                                        <input
+                                                            type="number"
+                                                            className="table-input text-center"
+                                                            value={item.tax}
+                                                            onChange={(e) => updateItem(item.id, 'tax', parseInt(e.target.value) || 0)}
+                                                        />
+                                                    </td>
+                                                    <td style={{ textAlign: 'right', fontWeight: 600, color: 'var(--color-primary)' }}>
+                                                        {formatCurrency(calculateItemTotal(item))}
+                                                    </td>
+                                                    <td>
+                                                        <button
+                                                            className="remove-item-btn"
+                                                            onClick={() => handleRemoveItem(item.id)}
+                                                            disabled={order.items.length === 1}
+                                                        >
+                                                            <Trash2 size={16} />
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <button className="add-item-btn" onClick={handleAddItem}>
+                                    <Plus size={16} /> Thêm dịch vụ
+                                </button>
+                            </div>
                         </div>
 
-                        {/* General Info */}
-                        <div className="order-card">
-                            <h3 className="card-title"><Calendar size={20} /> Thông tin chung</h3>
-                            <div className="form-grid">
-                                <div className="form-item">
-                                    <label className="info-label">Ngày đặt hàng</label>
-                                    <input
-                                        type="date"
-                                        className="edit-input"
-                                        value={order.orderDate}
-                                        onChange={(e) => setOrder({ ...order, orderDate: e.target.value })}
-                                    />
+                        {/* RIGHT COLUMN: Summary & Actions pane */}
+                        <div className="order-right-col">
+                            <div className="order-card" style={{ padding: '24px' }}>
+                                <h3 className="card-title" style={{ marginTop: 0, paddingTop: 0 }}>Tổng kết thanh toán</h3>
+                                <div className="summary-container">
+                                    <div className="summary-row">
+                                        <span className="summary-label">Tổng chi tiết</span>
+                                        <span className="summary-value" style={{ fontWeight: 600 }}>{formatCurrency(totalBeforeGlobalDiscount)}</span>
+                                    </div>
+                                    <div className="summary-row">
+                                        <span className="summary-label" style={{ color: 'var(--color-text-secondary)', fontSize: '0.85rem' }}>Giảm giá thêm (VND)</span>
+                                        <input
+                                            type="number"
+                                            className="summary-input"
+                                            value={order.discount}
+                                            onChange={(e) => setOrder({ ...order, discount: parseInt(e.target.value) || 0 })}
+                                        />
+                                    </div>
+                                    <div className="summary-row total">
+                                        <span className="summary-label">Tổng thanh toán</span>
+                                        <span className="summary-value">{formatCurrency(finalAmount)}</span>
+                                    </div>
                                 </div>
-                                <div className="form-item">
-                                    <label className="info-label">Chuyên viên CSKH</label>
+                            </div>
+
+                            <div className="order-card" style={{ padding: '24px' }}>
+                                <div className="form-item" style={{ marginBottom: 16 }}>
+                                    <label className="info-label">Chuyên viên phụ trách</label>
                                     <input
                                         type="text"
                                         className="edit-input"
@@ -305,147 +399,27 @@ export default function OrderCreatePage() {
                                         onChange={(e) => setOrder({ ...order, specialist: e.target.value })}
                                     />
                                 </div>
-                                <div className="form-item">
-                                    <label className="info-label">Trạng thái</label>
+                                <div className="form-item" style={{ marginBottom: 24 }}>
+                                    <label className="info-label">Trạng thái đơn hàng</label>
                                     <select
                                         className="edit-select create-status-select"
                                         value={order.status}
                                         onChange={(e) => setOrder({ ...order, status: e.target.value })}
+                                        style={{ backgroundColor: 'var(--color-bg)' }}
                                     >
                                         {statusOptions.map(opt => (
                                             <option key={opt.id} value={opt.id}>{opt.label}</option>
                                         ))}
                                     </select>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div className="items-table-section">
-                        <div className="table-header-row">
-                            <h3 className="card-title"><Tag size={20} /> Chi tiết dịch vụ</h3>
-                        </div>
-
-                        <div className="table-responsive">
-                            <table className="items-create-table">
-                                <thead>
-                                    <tr>
-                                        <th style={{ width: '20%' }}>Tên dịch vụ</th>
-                                        <th style={{ width: '12%' }}>Phân loại</th>
-                                        <th style={{ width: '12%' }}>Đối tượng</th>
-                                        <th style={{ width: '6%' }}>SL</th>
-                                        <th style={{ width: '12%' }}>Đơn giá</th>
-                                        <th style={{ width: '8%' }}>Giảm (%)</th>
-                                        <th style={{ width: '8%' }}>Thuế (%)</th>
-                                        <th style={{ width: '12%', textAlign: 'right' }}>Thành tiền</th>
-                                        <th style={{ width: '4%' }}></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {order.items.map((item, index) => (
-                                        <tr key={item.id}>
-                                            <td>
-                                                <select
-                                                    className="table-select"
-                                                    value={item.serviceName}
-                                                    onChange={(e) => updateItem(item.id, 'serviceName', e.target.value)}
-                                                >
-                                                    <option value="">-- Chọn gói --</option>
-                                                    {mockPacks.map(p => <option key={p.id} value={p.name}>{p.name}</option>)}
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <select
-                                                    className="table-select"
-                                                    value={item.packageType}
-                                                    onChange={(e) => updateItem(item.id, 'packageType', e.target.value)}
-                                                >
-                                                    {packageTypeOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <select
-                                                    className="table-select"
-                                                    value={item.customerCategory}
-                                                    onChange={(e) => updateItem(item.id, 'customerCategory', e.target.value)}
-                                                >
-                                                    {customerCategoryOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <input
-                                                    type="number"
-                                                    className="table-input text-center"
-                                                    value={item.quantity}
-                                                    onChange={(e) => updateItem(item.id, 'quantity', parseInt(e.target.value) || 0)}
-                                                />
-                                            </td>
-                                            <td>
-                                                <input
-                                                    type="number"
-                                                    className="table-input"
-                                                    value={item.price}
-                                                    onChange={(e) => updateItem(item.id, 'price', parseInt(e.target.value) || 0)}
-                                                />
-                                            </td>
-                                            <td>
-                                                <input
-                                                    type="number"
-                                                    className="table-input"
-                                                    value={item.discountPercent}
-                                                    onChange={(e) => updateItem(item.id, 'discountPercent', parseInt(e.target.value) || 0)}
-                                                />
-                                            </td>
-                                            <td>
-                                                <input
-                                                    type="number"
-                                                    className="table-input"
-                                                    value={item.tax}
-                                                    onChange={(e) => updateItem(item.id, 'tax', parseInt(e.target.value) || 0)}
-                                                />
-                                            </td>
-                                            <td style={{ textAlign: 'right', fontWeight: 600 }}>
-                                                {formatCurrency(calculateItemTotal(item))}
-                                            </td>
-                                            <td>
-                                                <button
-                                                    className="remove-item-btn"
-                                                    onClick={() => handleRemoveItem(item.id)}
-                                                    disabled={order.items.length === 1}
-                                                >
-                                                    <Trash2 size={16} />
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div className="table-footer-actions">
-                            <button className="add-item-btn" onClick={handleAddItem}>
-                                <Plus size={16} /> Thêm dịch vụ
-                            </button>
-                        </div>
-
-                        <div className="summary-section">
-                            <div className="summary-card">
-                                <div className="summary-row">
-                                    <span className="summary-label">Tổng tiền chi tiết</span>
-                                    <span className="summary-value">{formatCurrency(totalBeforeGlobalDiscount)}</span>
-                                </div>
-                                <div className="summary-row">
-                                    <span className="summary-label">Giảm giá thêm (VND)</span>
-                                    <input
-                                        type="number"
-                                        className="summary-input"
-                                        value={order.discount}
-                                        onChange={(e) => setOrder({ ...order, discount: parseInt(e.target.value) || 0 })}
-                                    />
-                                </div>
-                                <div className="summary-row total">
-                                    <span className="summary-label">Tổng thanh toán</span>
-                                    <span className="summary-value">{formatCurrency(finalAmount)}</span>
+                                <div className="action-buttons-grid">
+                                    <button className="save-btn" onClick={handleSave}>
+                                        <Save size={18} /> Lưu đơn hàng
+                                    </button>
+                                    <button className="cancel-btn" onClick={() => navigate('/orders')}>
+                                        Huỷ bỏ
+                                    </button>
                                 </div>
                             </div>
                         </div>

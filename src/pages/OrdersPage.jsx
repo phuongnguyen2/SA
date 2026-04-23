@@ -1,17 +1,17 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import Header from '../components/Header'
-import { Search, SlidersHorizontal, Clock, Eye, ShoppingCart, DollarSign, CheckCircle, XCircle, Plus, X } from 'lucide-react'
+import { Search, SlidersHorizontal, Clock, Eye, ShoppingCart, DollarSign, CheckCircle, XCircle, Plus, X, Coins } from 'lucide-react'
 
 const initialOrders = [
-    { id: 'ORD-001', customer: 'Công ty Cổ phần PT Hub', email: 'huhu13999@gmail.com', pack: 'Professional', amount: '299.000 VND', status: 'completed', paymentMethod: 'Chuyển khoản', createdAt: '27/02/2026, 15:30' },
-    { id: 'ORD-002', customer: 'PTH', email: 'yangmin@gmail.com', pack: 'Starter', amount: '99.000 VND', status: 'completed', paymentMethod: 'Thẻ tín dụng', createdAt: '25/02/2026, 10:15' },
-    { id: 'ORD-003', customer: 'Meeting App Company', email: 'mungnguyenvcu@gmail.com', pack: 'Enterprise', amount: '999.000 VND', status: 'pending', paymentMethod: 'Chuyển khoản', createdAt: '24/02/2026, 14:22' },
-    { id: 'ORD-004', customer: 'Công ty Cổ phần PT Hub', email: 'huhu13999@gmail.com', pack: 'Free Bonus', amount: '0 VND', status: 'completed', paymentMethod: 'Miễn phí', createdAt: '20/02/2026, 09:00' },
-    { id: 'ORD-005', customer: 'Meeting App Company', email: 'ct@pthub.vn', pack: 'Professional', amount: '299.000 VND', status: 'cancelled', paymentMethod: 'Thẻ tín dụng', createdAt: '18/02/2026, 16:45' },
-    { id: 'ORD-006', customer: 'Meeting App Company', email: 'hoa@hoa.hoa', pack: 'Starter', amount: '99.000 VND', status: 'completed', paymentMethod: 'Ví điện tử', createdAt: '15/02/2026, 11:30' },
-    { id: 'ORD-007', customer: 'PTH', email: 'yangmin@gmail.com', pack: 'Enterprise', amount: '999.000 VND', status: 'pending', paymentMethod: 'Chuyển khoản', createdAt: '12/02/2026, 08:20' },
-    { id: 'ORD-008', customer: 'Meeting App Company', email: 'hoa@test.test', pack: 'Starter', amount: '99.000 VND', status: 'completed', paymentMethod: 'Thẻ tín dụng', createdAt: '10/02/2026, 14:10' },
+    { id: 'ORD-001', customer: 'Công ty Cổ phần PT Hub', email: 'huhu13999@gmail.com', pack: 'Professional', credits: 3000, amount: '299.000 VND', status: 'completed', paymentMethod: 'Chuyển khoản', createdAt: '27/02/2026, 15:30' },
+    { id: 'ORD-002', customer: 'PTH', email: 'yangmin@gmail.com', pack: 'Starter', credits: 1300, amount: '99.000 VND', status: 'completed', paymentMethod: 'Thẻ tín dụng', createdAt: '25/02/2026, 10:15' },
+    { id: 'ORD-003', customer: 'Meeting App Company', email: 'mungnguyenvcu@gmail.com', pack: 'Enterprise', credits: 10000, amount: '999.000 VND', status: 'pending', paymentMethod: 'Chuyển khoản', createdAt: '24/02/2026, 14:22' },
+    { id: 'ORD-004', customer: 'Công ty Cổ phần PT Hub', email: 'huhu13999@gmail.com', pack: 'Free Bonus', credits: 500, amount: '0 VND', status: 'completed', paymentMethod: 'Miễn phí', createdAt: '20/02/2026, 09:00' },
+    { id: 'ORD-005', customer: 'Meeting App Company', email: 'ct@pthub.vn', pack: 'Professional', credits: 3000, amount: '299.000 VND', status: 'cancelled', paymentMethod: 'Thẻ tín dụng', createdAt: '18/02/2026, 16:45' },
+    { id: 'ORD-006', customer: 'Meeting App Company', email: 'hoa@hoa.hoa', pack: 'Starter', credits: 1300, amount: '99.000 VND', status: 'completed', paymentMethod: 'Ví điện tử', createdAt: '15/02/2026, 11:30' },
+    { id: 'ORD-007', customer: 'PTH', email: 'yangmin@gmail.com', pack: 'Enterprise', credits: 10000, amount: '999.000 VND', status: 'pending', paymentMethod: 'Chuyển khoản', createdAt: '12/02/2026, 08:20' },
+    { id: 'ORD-008', customer: 'Meeting App Company', email: 'hoa@test.test', pack: 'Starter', credits: 1300, amount: '99.000 VND', status: 'completed', paymentMethod: 'Thẻ tín dụng', createdAt: '10/02/2026, 14:10' },
 ]
 
 const statusMap = {
@@ -134,6 +134,7 @@ export default function OrdersPage() {
                                 <th>Mã đơn</th>
                                 <th>Khách hàng</th>
                                 <th>Gói dịch vụ</th>
+                                <th>Credit</th>
                                 <th>Số tiền</th>
                                 <th>Thanh toán</th>
                                 <th>Trạng thái</th>
@@ -154,6 +155,12 @@ export default function OrdersPage() {
                                         </div>
                                     </td>
                                     <td style={{ fontWeight: 500 }}>{order.pack}</td>
+                                    <td>
+                                        <div className="cell-credit">
+                                            <Coins size={14} />
+                                            <span style={{ fontWeight: 600 }}>{order.credits.toLocaleString()}</span>
+                                        </div>
+                                    </td>
                                     <td style={{ fontWeight: 600 }}>{order.amount}</td>
                                     <td className="cell-email">{order.paymentMethod}</td>
                                     <td>
