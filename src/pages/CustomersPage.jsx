@@ -1,19 +1,26 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
-import { Search, SlidersHorizontal, Users, Clock, Settings } from 'lucide-react'
+import { Search, SlidersHorizontal, Users, Clock, Settings, Coins, Crown, Star, Sparkles, TimerOff, FlaskConical, CalendarX, Trash2 } from 'lucide-react'
+
+const accountStatusMap = {
+    trial: { label: 'Trial', className: 'account-status-trial', icon: FlaskConical },
+    pro: { label: 'Pro', className: 'account-status-pro', icon: Crown },
+    expire: { label: 'Expire', className: 'account-status-expire-trial', icon: TimerOff },
+    delete: { label: 'Delete', className: 'account-status-delete', icon: Trash2 },
+}
 
 const mockCustomers = [
-    { id: 1, org: 'Công ty Cổ phần PT Hub', sub: 'PT Hub', email: 'huhu13999@gmail.com', status: 'active', members: 4, plans: ['free_bonus', 'starter'], createdAt: '27/02/2026, 03:38' },
-    { id: 2, org: 'PTH', sub: 'PTH', email: 'yangmin@gmail.com', status: 'active', members: 3, plans: ['free', 'professional'], createdAt: '25/02/2026, 03:25' },
-    { id: 3, org: 'Meeting App Company', sub: 'MAC', email: 'mungnguyenvcu@gmail.com', status: 'active', members: 1, plans: ['free'], createdAt: '24/02/2026, 09:01' },
-    { id: 4, org: 'Meeting App Company', sub: 'MAC', email: 'hcns@pthub.vn', status: 'active', members: 1, plans: ['free', 'starter', 'enterprise'], createdAt: '23/02/2026, 09:18' },
-    { id: 5, org: 'Meeting App Company', sub: 'MAC', email: 'ct@pthub.vn', status: 'active', members: 1, plans: ['free'], createdAt: '20/02/2026, 11:26' },
-    { id: 6, org: 'Meeting App Company', sub: 'MAC', email: 'hoa@hoa.hoa', status: 'active', members: 1, plans: ['free', 'starter'], createdAt: '12/02/2026, 11:12' },
-    { id: 7, org: 'Meeting App Company', sub: 'MAC', email: 'hoa@hoa.hoang', status: 'active', members: 1, plans: ['free'], createdAt: '12/02/2026, 18:45' },
-    { id: 8, org: 'Meeting App Company', sub: 'MAC', email: 'hoa@test.test', status: 'active', members: 1, plans: ['free'], createdAt: '12/02/2026, 16:40' },
-    { id: 9, org: 'Meeting App Company', sub: 'MAC', email: 'haha@gmail.com', status: 'active', members: 1, plans: ['professional', 'enterprise'], createdAt: '12/02/2026, 16:40' },
-    { id: 10, org: 'Meeting App Company', sub: 'MAC', email: 'dragon@gmail.com', status: 'active', members: 1, plans: ['free'], createdAt: '12/02/2026, 16:36' },
+    { id: 1, org: 'Công ty Cổ phần PT Hub', sub: 'PT Hub', email: 'huhu13999@gmail.com', accountStatus: 'pro', members: 4, totalCredits: 1800, usedCredits: 320, createdAt: '27/02/2026, 03:38' },
+    { id: 2, org: 'PTH', sub: 'PTH', email: 'yangmin@gmail.com', accountStatus: 'pro', members: 3, totalCredits: 3300, usedCredits: 580, createdAt: '25/02/2026, 03:25' },
+    { id: 3, org: 'Meeting App Company', sub: 'MAC', email: 'mungnguyenvcu@gmail.com', accountStatus: 'trial', members: 1, totalCredits: 150, usedCredits: 45, createdAt: '24/02/2026, 09:01', trialExpiresAt: '26/03/2026' },
+    { id: 4, org: 'Meeting App Company', sub: 'MAC', email: 'hcns@pthub.vn', accountStatus: 'pro', members: 1, totalCredits: 2500, usedCredits: 150, createdAt: '23/02/2026, 09:18' },
+    { id: 5, org: 'Meeting App Company', sub: 'MAC', email: 'ct@pthub.vn', accountStatus: 'delete', members: 1, totalCredits: 0, usedCredits: 0, createdAt: '20/02/2026, 11:26' },
+    { id: 6, org: 'Meeting App Company', sub: 'MAC', email: 'hoa@hoa.hoa', accountStatus: 'pro', members: 1, totalCredits: 1300, usedCredits: 200, createdAt: '12/02/2026, 11:12' },
+    { id: 7, org: 'Meeting App Company', sub: 'MAC', email: 'hoa@hoa.hoang', accountStatus: 'expire', members: 1, totalCredits: 150, usedCredits: 150, createdAt: '12/02/2026, 18:45' },
+    { id: 8, org: 'Meeting App Company', sub: 'MAC', email: 'hoa@test.test', accountStatus: 'trial', members: 1, totalCredits: 150, usedCredits: 0, createdAt: '12/02/2026, 16:40', trialExpiresAt: '14/03/2026' },
+    { id: 9, org: 'Meeting App Company', sub: 'MAC', email: 'haha@gmail.com', accountStatus: 'pro', members: 1, totalCredits: 5000, usedCredits: 1200, createdAt: '12/02/2026, 16:40' },
+    { id: 10, org: 'Meeting App Company', sub: 'MAC', email: 'dragon@gmail.com', accountStatus: 'delete', members: 1, totalCredits: 0, usedCredits: 0, createdAt: '12/02/2026, 16:36' },
 ]
 
 export default function CustomersPage() {
@@ -54,13 +61,13 @@ export default function CustomersPage() {
                     <table className="data-table">
                         <thead>
                             <tr>
-                                <th>Tên tổ chức</th>
-                                <th>Chủ sở hữu</th>
-                                <th>Trạng thái</th>
-                                <th>Nhân viên</th>
-                                <th>Gói dịch vụ</th>
-                                <th>Ngày tạo</th>
-                                <th>Hành động</th>
+                                <th style={{ width: '25%' }}>Tên tổ chức</th>
+                                <th style={{ width: '20%' }}>Chủ sở hữu</th>
+                                <th style={{ width: '15%' }}>Trạng thái</th>
+                                <th style={{ width: '10%' }}>Nhân viên</th>
+                                <th style={{ width: '14%' }}>Credit</th>
+                                <th style={{ width: '10%' }}>Ngày tạo</th>
+                                <th style={{ width: '6%', textAlign: 'center' }}>Hành động</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -74,9 +81,22 @@ export default function CustomersPage() {
                                     </td>
                                     <td className="cell-email">{customer.email}</td>
                                     <td>
-                                        <span className={`status-badge ${customer.status}`}>
-                                            {customer.status === 'active' ? 'Hoạt động' : customer.status === 'inactive' ? 'Ngừng' : 'Chờ duyệt'}
-                                        </span>
+                                        {(() => {
+                                            const info = accountStatusMap[customer.accountStatus] || accountStatusMap.trial
+                                            const Icon = info.icon
+                                            return (
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'flex-start' }}>
+                                                    <span className={`status-badge ${info.className}`}>
+                                                        <Icon size={13} /> {info.label}
+                                                    </span>
+                                                    {customer.accountStatus === 'trial' && customer.trialExpiresAt && (
+                                                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: '0.72rem', color: 'var(--color-text-muted)', fontWeight: 500 }}>
+                                                            <CalendarX size={12} /> Hết hạn: {customer.trialExpiresAt}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            )
+                                        })()}
                                     </td>
                                     <td>
                                         <div className="cell-member">
@@ -85,11 +105,20 @@ export default function CustomersPage() {
                                         </div>
                                     </td>
                                     <td>
-                                        <div className="plan-tags">
-                                            {customer.plans.map(plan => (
-                                                <span key={plan} className="plan-tag">{plan}</span>
-                                            ))}
-                                        </div>
+                                        {customer.accountStatus === 'expire' || customer.accountStatus === 'delete' ? (
+                                            <div className="cell-credit cell-credit-depleted">
+                                                <Coins size={14} />
+                                                <span style={{ fontWeight: 600, color: 'var(--color-danger, #e74c3c)' }}>
+                                                    {customer.accountStatus === 'delete' ? 'Đã xoá dữ liệu' : 'Hết credit'}
+                                                </span>
+                                            </div>
+                                        ) : (
+                                            <div className="cell-credit">
+                                                <Coins size={14} />
+                                                <span style={{ fontWeight: 600 }}>{customer.usedCredits.toLocaleString()}</span>
+                                                <span style={{ color: 'var(--color-text-muted)' }}>/ {customer.totalCredits.toLocaleString()}</span>
+                                            </div>
+                                        )}
                                     </td>
                                     <td>
                                         <div className="cell-date">
